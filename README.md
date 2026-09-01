@@ -10,13 +10,15 @@ on the tooltip.
 
 ## Screenshots
 
-<!-- screenshots go in screenshots/; suggested captures:
-     tooltip-deletable.png  - red "Can be deleted" on a finished quest's leftover
-     tooltip-repeatable.png - blue "Keep" on a scourgestone/turn-in item
-     oqt-scan.png           - /oqt output in the chat frame
-     bagshui-category.png   - a Bagshui category using SafeToDelete()  -->
+The same item before and after finishing its quest chain:
 
-*(screenshots coming soon)*
+| While the quest is open | After completion |
+|---|---|
+| ![Keep - a quest still wants this](screenshots/tooltip-pending.png) | ![Can be deleted](screenshots/tooltip-deletable.png) |
+
+A quest-provided item, guarded while its quest is in the log:
+
+![Keep - needed for an active quest](screenshots/tooltip-active.png)
 
 ## What you see
 
