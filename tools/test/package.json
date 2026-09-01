@@ -1,0 +1,12 @@
+{
+  "name": "octoquesttrash-tests",
+  "private": true,
+  "description": "Test harness for OctoQuestTrash: runs the addon Lua under a stubbed WoW 1.12 environment (fengari) and validates the generated data files.",
+  "scripts": {
+    "test": "node run.js"
+  },
+  "devDependencies": {
+    "fengari": "^0.1.4",
+    "luaparse": "^0.3.1"
+  }
+}
