@@ -1,0 +1,7 @@
+## Interface: 11200
+## Title: OctoQuestTrash
+## Notes: Flags quest items in your bags that can be safely deleted (quests completed). Uses pfQuest's database and history.
+## Author: Krool
+## OptionalDeps: pfQuest, pfQuest-octo, Bagshui
+Repeatables.lua
+OctoQuestTrash.lua
