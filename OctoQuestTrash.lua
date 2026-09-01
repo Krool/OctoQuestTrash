@@ -245,13 +245,16 @@ local function Annotate(tooltip, itemID)
   tooltip:Show()
 end
 
+-- The hooks run on every tooltip; a future pfQuest data-shape change must
+-- degrade to "no verdict line", never to an error popup mid-hover (the
+-- 2026-09-01 pfQuest ClassicAPI incident is the cautionary tale).
 local origSetBagItem = GameTooltip.SetBagItem
 function GameTooltip.SetBagItem(self, bag, slot)
   local hasCooldown, repairCost = origSetBagItem(self, bag, slot)
   local link = GetContainerItemLink(bag, slot)
   if link then
     local _, _, sid = string.find(link, "item:(%d+)")
-    if sid then Annotate(self, tonumber(sid)) end
+    if sid then pcall(Annotate, self, tonumber(sid)) end
   end
   return hasCooldown, repairCost
 end
@@ -264,7 +267,7 @@ function GameTooltip.SetInventoryItem(self, unit, invSlot)
     local link = GetInventoryItemLink("player", invSlot)
     if link then
       local _, _, sid = string.find(link, "item:(%d+)")
-      if sid then Annotate(self, tonumber(sid)) end
+      if sid then pcall(Annotate, self, tonumber(sid)) end
     end
   end
   return hasItem, hasCooldown, repairCost
@@ -332,7 +335,9 @@ end
 SLASH_OCTOQUESTTRASH1 = "/oqt"
 SLASH_OCTOQUESTTRASH2 = "/questtrash"
 SlashCmdList["OCTOQUESTTRASH"] = function()
-  OQT.Scan()
+  if not pcall(OQT.Scan) then
+    Print("|cffff5555scan failed|r - is pfQuest loaded and up to date?")
+  end
 end
 
 -- ---------------------------------------------------------------- bagshui
@@ -344,7 +349,8 @@ local function RegisterBagshui()
     ruleFunction = function(rules)
       local id = rules.item and rules.item.id
       if not id or id == 0 then return false end
-      local verdict = OQT.GetVerdict(id)
+      local ok, verdict = pcall(OQT.GetVerdict, id)
+      if not ok then return false end
       return verdict == "safe" or verdict == "notyours"
     end,
     ruleTemplates = {
@@ -369,8 +375,8 @@ frame:RegisterEvent("PLAYER_ENTERING_WORLD")
 frame:RegisterEvent("QUEST_LOG_UPDATE")
 frame:SetScript("OnEvent", function()
   if event == "PLAYER_ENTERING_WORLD" then
-    InitPlayerBits()
-    if not index then BuildIndex() end
+    pcall(InitPlayerBits)
+    if not index then pcall(BuildIndex) end
     lastHistoryCount = HistoryCount()
     if not hinted then
       hinted = true

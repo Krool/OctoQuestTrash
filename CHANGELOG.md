@@ -1,11 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.1.0 - 2026-09-01
 
+- Hardening: tooltip hooks, the Bagshui rule, the `/oqt` scan, and the
+  login index build are wrapped in pcall. A future pfQuest data-shape
+  change degrades to "no verdict line", never an error popup mid-hover.
+- `## Version` field in the toc.
 - Test suite (`tools/test`): syntax, data sanity, and behavior tests
   running the real addon Lua under a stubbed WoW environment; CI
   workflow runs it on every push.
-- MAINTAINING.md, changelog, README rework.
+- MAINTAINING.md, changelog, README rework, in-game screenshots.
 
 ## 2026-09-01 - verification pass
 
