@@ -40,13 +40,17 @@ everything with a verdict, deletables first.
 
 ## How it decides
 
-An item→quest index is built from pfQuest's database: items that **start**
-quests, items **collected** as objectives, and items **used on** targets.
-Each linked quest is judged: in your log / completed (pfQuest history) /
-repeatable (a shipped list of all 515 repeatable 1.12 quests, generated
-from the vanilla world database, plus known Turtle customs) / seasonal
-(pfQuest's event flag) / impossible for your race or class / not done yet.
-The most protective state wins.
+An item→quest index is built from pfQuest's database — items that **start**
+quests, items **collected** as objectives, items **used on** targets — plus
+a shipped table of quest-**provided** items (`SrcItemId`, 854 items from
+the 1.12 world database; pfQuest has no concept of them). Each linked
+quest is judged: in your log / completed (pfQuest history) / repeatable
+(a shipped union of every repeatable quest in BOTH the cmangos 1.12 world
+database and the preserved Turtle WoW 1.18.1 database — 740 quests,
+including all 66 item-linked Turtle custom repeatables; repeatable on
+either core means never flagged deletable) / seasonal (pfQuest's event
+flag) / impossible for your race or class / not done yet. The most
+protective state wins.
 
 ## Honest limits
 
@@ -55,8 +59,9 @@ The most protective state wins.
   A built-in never-delete list guards the famous ones (Aqual/Eternal
   Quintessence, Scepter of Celebras, Seal of Ascension, dungeon keys)
   in case future databases add links.
-- **Turtle/Octo custom repeatables** beyond the known list can slip
-  through as "probably deletable" — hence the hedge, never a hard verdict.
+- **Custom quests** (id ≥ 40000) found in the preserved Turtle database
+  have known repeatability and get normal verdicts; OctoWoW-only customs
+  absent from it are hedged as "probably deletable", never a hard verdict.
 - **pfQuest's history isn't perfect**: in rare cases an abandoned or
   server-removed quest can be recorded as completed. `/db query` rebuilds
   the history from the server and is the recommended source of truth.

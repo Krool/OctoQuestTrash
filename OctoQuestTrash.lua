@@ -8,8 +8,12 @@
 --   pfDB["quests"]["data"][qid].event    = seasonal/event quest marker
 --   pfQuest_history[qid]                 = completed quests (backfill: /db query)
 --   pfQuest.questlog[qid]                = quests currently in the log
---   OctoQuestTrashRepeatable[qid]        = repeatable quests (Repeatables.lua,
---                                          generated from the 1.12 world db)
+--   OctoQuestTrashRepeatable[qid]        = repeatable quests (Repeatables.lua:
+--                                          union of the cmangos 1.12 and
+--                                          Turtle 1.18.1 world dbs)
+--   OctoQuestTrashProvided[iid]          = quest-provided items (SrcItemId,
+--                                          from the cmangos 1.12 db)
+--   OctoQuestTrashCustomKnown[qid]       = customs with known repeatability
 --
 -- Verdicts per bag item (most protective wins):
 --   active   - a quest in your log wants it. Keep.
@@ -63,7 +67,7 @@ local NEVER_DELETE = {
   [11511]=1, -- Cenarion Beacon
 }
 
-local ROLE_TEXT = { start = "starts", obj = "needed for", req = "used in" }
+local ROLE_TEXT = { start = "starts", obj = "needed for", req = "used in", prov = "given by" }
 
 local function Print(msg)
   DEFAULT_CHAT_FRAME:AddMessage("|cff33ffccOcto|cffffffffQuestTrash|r: " .. msg)
@@ -98,6 +102,14 @@ local function BuildIndex()
       end
     end
   end
+  -- quest-provided items (SrcItemId): pfQuest's db has no concept of them,
+  -- so without these links a provided item is invisible - or judged only
+  -- by OTHER quests and read "deletable" while its own quest is mid-flight
+  if OctoQuestTrashProvided then
+    for iid, qids in pairs(OctoQuestTrashProvided) do
+      for _, qid in pairs(qids) do AddLink(iid, qid, "prov") end
+    end
+  end
 end
 
 local function InitPlayerBits()
@@ -125,7 +137,12 @@ local function QuestState(qid)
   local q = pfDB and pfDB["quests"] and pfDB["quests"]["data"] and pfDB["quests"]["data"][qid]
   if q and q["event"] then return "event" end
   if pfQuest_history and pfQuest_history[qid] then
-    if qid >= CUSTOM_QUEST_MIN then return "customdone" end
+    -- customs get the hedged verdict only when their repeatability is
+    -- unknowable (absent from the Turtle preservation db = OctoWoW-only)
+    if qid >= CUSTOM_QUEST_MIN
+      and not (OctoQuestTrashCustomKnown and OctoQuestTrashCustomKnown[qid]) then
+      return "customdone"
+    end
     return "done"
   end
   if q and bit then

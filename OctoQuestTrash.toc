@@ -4,4 +4,6 @@
 ## Author: Krool
 ## OptionalDeps: pfQuest, pfQuest-octo, Bagshui
 Repeatables.lua
+Provided.lua
+CustomKnown.lua
 OctoQuestTrash.lua
